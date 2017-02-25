@@ -112,7 +112,6 @@ ECHO.
 
 SET ROOT_KEY="HKEY_CURRENT_USER"
 
-
 FOR /f "skip=2 tokens=3" %%i IN ('reg query HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Nls\CodePage /v OEMCP') DO SET OEMCP=%%i
 
 ECHO System default values:
