@@ -1,10 +1,10 @@
 REM ===============================================
-REM ARK SURVIVAL WINDOWS SERVER STARTUP SCRIPT v1.1
+REM ARK SURVIVAL WINDOWS SERVER STARTUP SCRIPT v1.2
 REM
 REM by Andreas "MrCerealGuy" Zahnleiter
 REM <mailto:mrcerealguy [at] gmx [dot] de>
 REM
-REM Last changed: 2017-02-25
+REM Last changed: 2017-02-26
 REM ===============================================
 
 @ECHO OFF
@@ -43,70 +43,8 @@ FOR %%A IN (%STEAMCMD_DIR% %ARK_SERVER_DIR% %MOD_CLIENT_DIR%) DO (
 
 REM -- SELECT CODEPAGE ----------------------------
 
-ECHO ARK SURVIVAL SERVER STARTER v1.0
-ECHO.
-
-SET ROOT_KEY="HKEY_CURRENT_USER"
-
-FOR /f "skip=2 tokens=3" %%i IN ('reg query HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Nls\CodePage /v OEMCP') DO SET OEMCP=%%i
-
-ECHO System default values:
-
-ECHO.
-ECHO ...............................................
-ECHO Select Codepage 
-ECHO ...............................................
-ECHO.
-ECHO 1 - CP1252
-ECHO 2 - UTF-8 (recommend)
-ECHO 3 - CP850
-ECHO 4 - ISO-8859-1
-ECHO 5 - ISO-8859-15
-ECHO 6 - US-ASCII
-ECHO.
-ECHO 9 - Reset to System Default (CP%OEMCP%)
-ECHO 0 - EXIT
-ECHO.
-
-SET /P  CP="Select a Codepage: "
-
-IF %CP%==1 (
-    ECHO Set default Codepage to CP1252
-    REG ADD "%ROOT_KEY%\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 1252" /f
-) ELSE IF %CP%==2 (
-    ECHO Set default Codepage to UTF-8
-    REG ADD "%ROOT_KEY%\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 65001" /f
-) ELSE IF %CP%==3 (
-    ECHO Set default Codepage to CP850
-    REG ADD "%ROOT_KEY%\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 850" /f
-) ELSE IF %CP%==4 (
-    ECHO Set default Codepage to ISO-8859-1
-    REG ADD "%ROOT_KEY%\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 28591" /f
-) ELSE IF %CP%==5 (
-    ECHO Set default Codepage to ISO-8859-15
-    REG ADD "%ROOT_KEY%\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 28605" /f
-) ELSE IF %CP%==5 (
-    ECHO Set default Codepage to ASCII
-    REG ADD "%ROOT_KEY%\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 20127" /f
-) ELSE IF %CP%==9 (
-    ECHO Reset Codepage to System Default
-    REG DELETE "%ROOT_KEY%\Software\Microsoft\Command Processor" /v AutoRun /f
-) ELSE IF %CP%==0 (
-    ECHO Bye
-
-REM -- CHECK DIRECTORIES---------------------------
-
-FOR %%A IN (%STEAMCMD_DIR% %ARK_SERVER_DIR% %MOD_CLIENT_DIR%) DO (
-    IF NOT EXIST %%A (
-        ECHO Directory %%A doesn't exist!
-        GOTO error
-    )
-)
-
-REM -- SELECT CODEPAGE ----------------------------
-
 Call :Color A "..............................................." \n ^
-            A "ARK SURVIVAL SERVER STARTER v1.1               " \n ^
+            A "ARK SURVIVAL SERVER STARTER v1.2               " \n ^
             A "..............................................." \n
 ECHO.
 
@@ -178,6 +116,9 @@ PAUSE
 FOR %%A IN (%MODS%) DO robocopy %MOD_CLIENT_DIR%\%%A %ARK_SERVER_DIR%\ShooterGame\Content\Mods\%%A /E
 FOR %%A IN (%MODS%) DO robocopy %MOD_CLIENT_DIR%\ %ARK_SERVER_DIR%\ShooterGame\Content\Mods\ %%A.mod
 
+REM Update mods via SteamCMD
+REM %STEAMCMD_DIR%\steamcmd +login anonymous +force_install_dir %ARK_SERVER_DIR% +workshop_download_item 346110 %%A +quit
+
 REM -- START SERVER -------------------------------
 
 ECHO.
@@ -192,10 +133,17 @@ PAUSE
 ShooterGameServer.exe %MAP%?listen?SessionName=%SESSIONNAME%?ServerPassword=%SERVERPASSWORD%?ServerAdminPassword=%SERVERADMINPASSWORD%?Port=%PORT%?QueryPort=%QUERYPORT%?MaxPlayers=%MAXPLAYERS% %OPTIONS%
 
 ECHO.
-ECHO Server was stopped.
+Call :Color C "..............................................." \n ^
+            C "SERVER WAS STOPPED!                            " \n ^
+            C "..............................................." \n
+ECHO.
 
 IF %RESTART_STOPPED_SERVER%==1 (
-    ECHO Restart Ark Survival Server.
+    ECHO.
+    Call :Color A "..............................................." \n ^
+                A "RESTARTING ARK SURVIVAL SERVER...              " \n ^
+                A "..............................................." \n
+    ECHO.
     GOTO server_start
 )
 
