@@ -1,14 +1,16 @@
 REM ===============================================
-REM ARK SURVIVAL WINDOWS SERVER STARTUP SCRIPT v1.2
+REM ARK SURVIVAL WINDOWS SERVER STARTUP SCRIPT v1.3
 REM
 REM by Andreas "MrCerealGuy" Zahnleiter
 REM <mailto:mrcerealguy [at] gmx [dot] de>
 REM
-REM Last changed: 2017-02-26
+REM Last changed: 2017-03-07
 REM ===============================================
 
 @ECHO OFF
 MODE 120
+
+TITLE [ ARK SURVIVAL SERVER STARTER ]
 
 REM -- SET VARIABLES ------------------------------
 
@@ -43,10 +45,7 @@ FOR %%A IN (%STEAMCMD_DIR% %ARK_SERVER_DIR% %MOD_CLIENT_DIR%) DO (
 
 REM -- SELECT CODEPAGE ----------------------------
 
-Call :Color A "..............................................." \n ^
-            A "ARK SURVIVAL SERVER STARTER v1.2               " \n ^
-            A "..............................................." \n
-ECHO.
+CALL:MsgBox A, "ARK SURVIVAL SERVER STARTER v1.3"
 
 SET ROOT_KEY="HKEY_CURRENT_USER"
 
@@ -103,47 +102,31 @@ IF %CP%==1 (
 
 REM -- UPDATE ARK AND MODS ------------------------
 
-ECHO.
-Call :Color A "..............................................." \n ^
-            A "PRESS ANY KEY TO UPDATE SERVER AND MODS        " \n ^
-            A "..............................................." \n
-ECHO.
+CALL:MsgBox A, "PRESS ANY KEY TO UPDATE SERVER AND MODS"
 
 PAUSE
 
 %STEAMCMD_DIR%\steamcmd +login anonymous +force_install_dir %ARK_SERVER_DIR% +app_update 376030 +quit
 
-FOR %%A IN (%MODS%) DO robocopy %MOD_CLIENT_DIR%\%%A %ARK_SERVER_DIR%\ShooterGame\Content\Mods\%%A /E
-FOR %%A IN (%MODS%) DO robocopy %MOD_CLIENT_DIR%\ %ARK_SERVER_DIR%\ShooterGame\Content\Mods\ %%A.mod
+FOR %%A IN (%MODS%) DO robocopy %MOD_CLIENT_DIR%\%%A %ARK_SERVER_DIR%\ShooterGame\Content\Mods\%%A /E /NJS /NJH /NFL
+FOR %%A IN (%MODS%) DO robocopy %MOD_CLIENT_DIR%\ %ARK_SERVER_DIR%\ShooterGame\Content\Mods\ %%A.mod /NJS /NJH /NFL
 
 REM Update mods via SteamCMD
 REM %STEAMCMD_DIR%\steamcmd +login anonymous +force_install_dir %ARK_SERVER_DIR% +workshop_download_item 346110 %%A +quit
 
 REM -- START SERVER -------------------------------
 
-ECHO.
-Call :Color A "..............................................." \n ^
-            A "PRESS ANY KEY TO START ARK SURVIVAL SERVER     " \n ^
-            A "..............................................." \n
-ECHO.
+CALL:MsgBox A, "PRESS ANY KEY TO START ARK SURVIVAL SERVER"
 
 PAUSE
 
 :server_start
 ShooterGameServer.exe %MAP%?listen?SessionName=%SESSIONNAME%?ServerPassword=%SERVERPASSWORD%?ServerAdminPassword=%SERVERADMINPASSWORD%?Port=%PORT%?QueryPort=%QUERYPORT%?MaxPlayers=%MAXPLAYERS% %OPTIONS%
 
-ECHO.
-Call :Color C "..............................................." \n ^
-            C "SERVER WAS STOPPED!                            " \n ^
-            C "..............................................." \n
-ECHO.
+CALL:MsgBox C, "SERVER WAS STOPPED!"
 
 IF %RESTART_STOPPED_SERVER%==1 (
-    ECHO.
-    Call :Color A "..............................................." \n ^
-                A "RESTARTING ARK SURVIVAL SERVER...              " \n ^
-                A "..............................................." \n
-    ECHO.
+    CALL:MsgBox A, "RESTARTING ARK SURVIVAL SERVER..."
     GOTO server_start
 )
 
@@ -151,15 +134,19 @@ PAUSE
 EXIT
 
 :error
-ECHO.
-Call :Color C "..............................................." \n ^
-            C "SERVER COULD NOT BE STARTED!                   " \n ^
-            C "..............................................." \n
-ECHO.
-
+CALL:MsgBox C, "SERVER COULD NOT BE STARTED!"
 PAUSE
-
 EXIT
+
+REM -- MSGBOX FUNCTION ----------------------------
+
+:MsgBox
+ECHO.
+CALL:Color %~1 "..............................................." \n ^
+           %~1 "%~2" \n ^
+           %~1 "..............................................." \n
+ECHO.
+goto:eof
 
 REM -- COLOR FUNCTION -----------------------------
 
