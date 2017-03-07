@@ -9,7 +9,7 @@ An easy to use startup script for the Ark Survival Evolved dedicated server.
 
 ## Usage
 
-1. Save the batch file **server_start.bat** to your server binary directory, e.g. X:\ARKServer\ShooterGame\Binaries\Win64\.
+1. Save the batch file **startdedicated.bat** to your server binary directory, e.g. X:\ARKServer\ShooterGame\Binaries\Win64\.
 2. Edit the startup script and set the variables.
 
 ### Example
